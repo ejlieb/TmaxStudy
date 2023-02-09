@@ -228,6 +228,25 @@ window.ts.transpileModule(src, {});
 
 이 때 인터페이스는 다수를 동시에 확장할 수 있다. 이 경우 확장 대상이 되는 인터페이스들은  `,`  로 구분한다. 새로 정의할 인터페이스는 모든 확장 대상 인터페이스의 속성에 자신의 속성을 더한 타입을 갖는다.
 
+
+
+##### Callable
+
+Callable은 타입 또는 인터페이스의 일부가 될 때 타입을 붙일(annotate) 수 있다.
+
+- Callable은 `()`을 말한다.
+
+```typescript
+interface ReturnString {
+  (): string
+}
+
+declare const foo: ReturnString;
+const bar = foo(); // bar는 문자열 타입인 것으로 추론됨
+```
+
+
+
 ##### Narrowing
 
 타입스크립트에서는 타입을 한정해야하는 경우가 있다. 대표적으로 Union을 사용하는 경우를 예시로 보자.
@@ -281,6 +300,12 @@ function padLeft(padding: number | string, input: string) {
 등이 있다.
 
 컴파일러는 이런 제어구조로부터 코드의 특정 시점에서 갖는 상태에 대한 정보를 얻을 수 있다. 이 정보를 이용해 control flow analysis를 진행해 특정 값의 타입을 좁혀낼 수 있다.
+
+
+
+##### Literal
+
+
 
 
 
