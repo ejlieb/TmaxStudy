@@ -107,6 +107,88 @@ Fiber는 Reconciler를 재구현하는 역할이다.
 
 ##### Fiber
 
+Fiber는 구체적으로 다음과 같은 일을 수행한다
+
+- 일을 잠시 멈추고 나중에 다시 돌아오기
+- 다른 유형의 일에 우선권 부여하기
+- 이전에 완성한 작업을 재상요하기
+- 더이상 필요하지 않은 작업을 중단하기
+
+
+
+이를 위해 단위별로 세분화해야하며 이 모든 과정을 Fiber라고 할 수 있다.
+
+Fiber는 이처럼 작업의 한 단위를 나타낸다.
+
+
+
+데이터의 함수로서 React Component는 보통 다음과 같다
+
+```javascript
+v = f(d)
+// view는 data에 대한 function의 결과
+```
+
+
+
+React앱을 렌더링하는 것은 다른 함수들을 호출하는 body를 가진 함수를 호출하는 것과 동일하다고 볼 수 있다.
+
+컴퓨터가 프로그램 실행을 추적할 때 일반적으로 Call Stack을 이용한다. 함수가 실행되면 스택에 새 stack frame이 추가된다
+
+UI 렌더링에 최적화되도록 Call Stack의 동작을 사용자 지정하고 Call Stack과 Stack Frame을 조작할 수 있게 하는 것이 Fiber의 목적이다.
+
+
+
+Fiber는 React Component에 특화된 Stack의 재구성이다. 하나의 Fiber가 곧 virtual stack frame과 같다.
+
+Stack을 재구성함으로써ㅓ stack frame을 메모리에 보관하고 언제든지 실행하여 스케줄링 목표를 달성할 수 있다.
+
+stack frame을 수동으로 처리하면 concurrency 및 error boundary와 같은 기능들에 대한 잠재력을 확보할 수도 있다.
+
+
+
+##### Fiber 구조
+
+
+
+Fiber는 Component 및 Componenet의 입출력에 대한 정보를 포함한 자바스크립트 객체이다
+
+Fiber는 stack frame이기도 하지만 컴포넌트의 인스턴스이다.
+
+
+
+Fiber의 주요 field들은 다음과 같다.
+
+
+
+`type`과 `key`
+
+Type과 Key는 재조정 시에 fiber가 재사용될 수 있는지 판단할 때 사용된다.
+
+
+
+`child`와 `sibling`
+
+다른 fiber들을 가리킨다. 재귀적 트리구조를 묘사한다.
+
+child는 Component의 렌더 메서드에 의해 반환된 값들이다.
+
+```react
+function Parent() {
+    return <Child />
+}
+```
+
+
+
+sibling은 render가 여러 자식들을 반환하는 케이스를 설명한다.
+
+```react
+function Parent() {
+    return <Child1 />, <Child2 />
+}
+```
+
 
 
 
