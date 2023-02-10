@@ -2,7 +2,7 @@
 
 
 
-##### Why Docker?
+#### Why Docker?
 
 결론적으로는 프로그램을 다운 받는 과정을 간단하게 하기 위해서!
 
@@ -10,7 +10,7 @@
 
 
 
-##### What is Docker?
+#### What is Docker?
 
 도커는 **컨테이너**를 사용하여 응용프로그램을 더 쉽게 만들고 배포하고 실행할 수 있도록 설계된 도구.
 
@@ -18,7 +18,7 @@
 
 
 
-##### Container
+#### Container
 
 서버에서의 컨테이너 개념
 
@@ -31,7 +31,7 @@
 
 
 
-##### Docker Image & Container
+#### Docker Image & Container
 
 Container
 
@@ -47,7 +47,7 @@ Container Image
 
 
 
-##### Docker 실행 과정
+#### Docker 실행 과정
 
 1. Docker CLI에 명령어를 입력
 2. 도커 엔진(데몬)에서 실행된다
@@ -59,7 +59,7 @@ Container Image
 
 
 
-##### Docker Container vs Virtual Machine
+#### Docker Container vs Virtual Machine
 
 가상화 기술이 나오기 전
 
@@ -99,7 +99,7 @@ Docker 와 VM의 차이점
 
 
 
-##### Docker 컨테이너 격리 방법
+#### Docker 컨테이너 격리 방법
 
 Linux에서 사용되는 Cgroup과 Namespace 개념
 

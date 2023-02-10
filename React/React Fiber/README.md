@@ -2,7 +2,7 @@
 
 
 
-##### What is React Fiber?
+#### What is React Fiber?
 
 Fiber는 React v16에서 리액트의 핵심알고리즘을 재구성 재조정(Reconciliation) 엔진이다.
 
@@ -26,7 +26,7 @@ v) 에러 바운더리에 대한 더 나은 지원
 
 
 
-##### Virtual DOM
+#### Virtual DOM
 
 Virtual DOM은 Real DOM의 in-memory 표현
 
@@ -46,7 +46,7 @@ Virtual DOM은 브라우저 API위에 있는 Javascript 라이브러리에서 �
 
  
 
-##### Reconciliation
+#### Reconciliation
 
 React가 변경해야 할 부분을 결정하기 위해 한 트리를 다른 트리와 비교하는 데 사용하는 알고리즘
 
@@ -79,7 +79,7 @@ React API의 핵심 아이디어는 업데이트를 통해 전체 앱을 다시 
 
 
 
-##### Reconciliation과 Rendering
+#### Reconciliation과 Rendering
 
 React에서는 재조정과 렌더링의 단계가 별개이다.
 
@@ -105,7 +105,7 @@ Fiber는 Reconciler를 재구현하는 역할이다.
 
 
 
-##### Fiber
+#### Fiber
 
 Fiber는 구체적으로 다음과 같은 일을 수행한다
 
@@ -147,7 +147,7 @@ stack frame을 수동으로 처리하면 concurrency 및 error boundary와 같�
 
 
 
-##### Fiber 구조
+#### Fiber 구조
 
 
 
