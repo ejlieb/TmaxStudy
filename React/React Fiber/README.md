@@ -141,7 +141,7 @@ UI 렌더링에 최적화되도록 Call Stack의 동작을 사용자 지정하�
 
 Fiber는 React Component에 특화된 Stack의 재구성이다. 하나의 Fiber가 곧 virtual stack frame과 같다.
 
-Stack을 재구성함으로써ㅓ stack frame을 메모리에 보관하고 언제든지 실행하여 스케줄링 목표를 달성할 수 있다.
+Stack을 재구성함으로써 stack frame을 메모리에 보관하고 언제든지 실행하여 스케줄링 목표를 달성할 수 있다.
 
 stack frame을 수동으로 처리하면 concurrency 및 error boundary와 같은 기능들에 대한 잠재력을 확보할 수도 있다.
 
@@ -192,4 +192,23 @@ function Parent() {
 
 
 
+
+```typescript
+{
+    
+    type: any, // For a class component, it points to constructors; for a DOM element, it specifies HTML tags
+    key: null | string, // The unique identifier
+    stateNode: any, // Save the references to class instances of components, DOM nodes, or other React element types associated with the fiber node
+    child: Fiber | null, // The first child node
+    sibling: Fiber | null, // The next child node
+    return: Fiber | null, // The parent node
+    tag: WorkTag, // Define the type of fiber action. For more information,see https://github.com/facebook/react/blob/master/packages/react-reconciler/src/ReactWorkTags.js
+    nextEffect: Fiber | null, // The pointer to next node
+    updateQueue: mixed, // The queue for status update, callback function, and DOM update
+    memoizedState: any, // The fiber state for output creation
+    pendingProps: any, // The props that are updated from the new data of React elements and need to be applied to child components or DOM elements
+    memoizedProps: any, // The props used to create the output during the previous rendering
+    // ……     
+}
+```
 
