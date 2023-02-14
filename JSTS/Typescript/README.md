@@ -150,6 +150,162 @@ type Infeasible = string & number
 
 문자열인 동시에 숫자인 타입은 없으므로 Infeasible 타입은 실제로 어떤 값도 가질수 없다.
 
+
+
+#### Utility Types
+
+1. Record<K, T>
+
+Record 타입은 두개의 제네릭 타입을 받을 수 있다.
+
+K는 key값의 타입, T는 값의 타입으로 갖는 타입을 리턴한다.
+
+```typescript
+type Record<K, T> = {
+    [P in K]: T;
+};
+```
+
+```typescript
+type IFieldValue = {
+  name: string;
+  value: number;
+};
+
+type IFormName = 'event' | 'point';
+
+const x: Record<IFormName, IFieldValue> = {
+  event: {
+    name: 'foo',
+    value: 0,
+  },
+  point: {
+    name: 'foo',
+    value: 30,
+  }
+}
+```
+
+Record 타입은 Index Signature 방식과 비슷하다. 인덱스 시그니처는 대괄호로 객체를 접근하는 방법이다.
+
+```typescript
+type humanInfo = { 
+  [name: string]: number 
+};
+
+let human:humanInfo = {
+  '홍길동': 20,
+  '둘리': 30,
+  '마이콜': 40
+};
+// Index Signature
+
+type humanInfo = Record<string, number>
+
+let human:humanInfo = {
+  '홍길동': 20,
+  '둘리': 30,
+  '마이콜': 40
+};
+
+// Record Type
+```
+
+차이점은 인덱스 시그니처는 문자열 리터럴을 Key로 사용할 수 없다는 점이다.
+
+Record 타입은 가능하다.
+
+```typescript
+type names = '홍길동' | '둘리' | '마이콜';
+
+type humanInfo = Record<names, number>
+
+let human:humanInfo = {
+  '홍길동': 20,
+  '둘리': 30,
+  '마이콜': 40
+};
+```
+
+
+
+2. Exclude<T, U>
+
+Exclude타입은 2개의 제네릭 타입을 받을 수 있다.
+
+첫번째 타입 T 중 두번째 타입 U와 겹치는 타일을 제외한 타입을 반환한다. (차집합과 비슷)
+
+```typescript
+type Exclude<T, U> = T extends U ? never: T;
+```
+
+타입 T가 U를 상속하거나 동일 타입이라면 무시하고 아닐 경우 타입 값을 리턴한다.
+
+```typescript
+type OnlyNumber = Exclude<string|number, string>;
+// Onlynumber는 number 타입이다.
+```
+
+
+
+3. Extract<T, U>
+
+첫번째 제네릭 타입 T에 대하여 제네릭 타입 U 중 할당 가능한 타입을 할당한다. Exclude와 반대되는 개념
+
+```typescript
+type Extract<T, U> = T extends U ? T: never;
+```
+
+T 타입에서 U타입과 겹치는 타입만을 추출하는 것
+
+```typescript
+type Event = {
+  id: string;
+  title: string;
+};
+
+type Point = {
+  target: string;
+  amount: number;
+};
+
+type PointInfo = Extract<Event|Point, Point>;
+// PointInfo 타입과 Point 타입은 동일한 타입이다.
+```
+
+
+
+4. Pick<T, K>
+
+T타입으로 부터 K 프로퍼티만을 추출한다.
+
+```typescript
+type Pick<T, K extends keyof T> = {
+    [P in K]: T[P];
+};
+```
+
+T내에서 Union 타입 K라는 프로퍼티에 대한 타입을 뽑아낸다.
+
+```typescript
+interface Event {  
+  id: string;
+  title: string;
+  isDone: boolean;
+  startDate: string;
+};
+
+type BaseInfo = Pick<Event, 'id' | 'title'>;
+
+interface PickedEvent {
+  id: string;
+  title: string;
+};
+// BaseInfo 타입과 PickedEvent 타입은 동일한 타입이다
+```
+
+
+
 ##### Type Aliases
 
 type은 타입을 재사용하기 위해서 사용한다. 앞의 방식처럼 변수나 함수 등에 직접 타입을 명시할 수도 있지만 type을 사용하면 재사용이 더욱 편리해진다.
@@ -303,7 +459,118 @@ function padLeft(padding: number | string, input: string) {
 
 
 
-##### Literal
+#### Type 추론
+
+Compiler는 타입 추론을 통해 명시적인 타입 표기 없이도 타입 정보를 이해할 수 있다.
+
+
+
+```typescript
+let x:number = 3;
+
+let x = 3;  // number 타입 추론
+```
+
+
+
+하나의 값에 대한 타입 추론은 단순하나 여러 값이 연관된 타입을 추론할 때는 **최적 공통 타입**이라는 접근법을 사용한다. 모든 가능한 타입의 유니온 타입을 사용하는 것이다.
+
+
+
+```typescript
+interface Animal {
+    legs: number;
+}
+
+interface Dog extends Animal {
+    bark(): void;
+}
+
+interface Car extends Animal {
+    meow(): void;
+}
+
+let dog: Dog;
+let cat: Cat;
+const dogAndCat = [dog, cat];  // Array<Dog | Cat>
+```
+
+
+
+할당이 일어날 때 타입추론은 할당 반는 값(왼쪽 항) 뿐만 아니라 할당하는 값(오른쪽 항)
+
+의 타입에 대해서도 일어난다. 이것을 `Contextual Type`이라고 한다.
+
+
+
+#### Type Assertion
+
+컴파일러가 가진 정보를 무시하고 프로그래머가 임의로 타입을 할당하는 행위이다.
+
+보통 
+
+`value as Type` 의 형태로 타입을 단언한다.
+
+
+
+```typescript
+interface Dog {
+    legs: 4;
+   	bark(): void;
+}
+
+interface Insect {
+    legs: number;
+    creepy: boolean;
+}
+
+interface Fish {
+    swim(): void;
+}
+
+type Animal = Dog | Insect | Fish;
+
+function doSOmethingWithAnimal(animal: Animal) {
+    (animal as Fish).swim();
+}
+```
+
+Type Assertion은 타입 에러를 없애줄 뿐 런타임 에러를 막아주지 않는다.
+
+
+
+다중 단언을 하는 방법도 있다.
+
+```typescript
+interface Dog {
+    legs: 4;
+   	bark(): void;
+}
+
+interface Insect {
+    legs: number;
+    creepy: boolean;
+}
+
+const dog:Dog = {
+    legs: 4,
+    bark() {
+        console.log('bark');
+    } 
+}
+
+const insect: Insect = dog as Insect;
+
+// error TS2352: Type 'Dog' cannot be converted to type 'Insect'.
+//   Property 'creepy' is missing in type 'Dog'.
+
+
+const insect2: Insect = (dog as any) as Insect; // ok
+```
+
+
+
+
 
 
 
