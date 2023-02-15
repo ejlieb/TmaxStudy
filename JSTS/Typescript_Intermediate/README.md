@@ -270,6 +270,10 @@ type B = PromiseType<Promise<string | boolean>>;
 type C = PromiseType<number>;
 ```
 
+위코드를 살펴보면 `PromiseTypes<T>` 타입에 `Promise<number>`타입을 인자로 넘기면 number 타입을 얻는다.
+
+
+
 
 
 
