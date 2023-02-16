@@ -89,9 +89,20 @@ Volume 명령어
 
 - 호스트 디렉토리에 node_modules은 없기 때문에 컨테이너에 맵핑을 하지 말라는 뜻
 
-`-v %cd%:/usr/src/app` -window cmd /  `-v $(pwd):/usr/src/app` - bash/mac/linux
+`-v %cd%:/usr/src/app` -window cmd /  `-v "$(pwd):/usr/src/app"` - bash/mac/linux
+
+`-v ${pwd}:/usr/src/app` powershell
+
+- !!주의 git bash 환경에서 $(pwd)로 usr/src/app을 참조하면 작동하지 않음
+- $(pwd)/server.js:/usr/src/app/server.js로 참조해야 동작
+- powershell에서는 그냥 저대로 하면 잘된다. 왜인지는 모르겠음
+- git bash 환경에서만 volume 관련 path 문제가 있다고 한다! 웬만하면 linux환경에서 하자
 
 - cd 경로에 있는 디렉토리 혹은 파일을 /usr/src/app 경로에서 참조
+
+
+
+
 
 
 
