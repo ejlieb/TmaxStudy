@@ -249,6 +249,8 @@ type Alignment = `${VerticalAlignment}-${HorizontalAlignment}`;
 
 
 
+##### Conditional Type
+
 컨디셔널 타입은 삼항 연산자와 비슷하게 분기를 수행하면서 타입을 추론하는 방법이다.
 
 
@@ -272,15 +274,142 @@ type C = PromiseType<number>;
 
 위코드를 살펴보면 `PromiseTypes<T>` 타입에 `Promise<number>`타입을 인자로 넘기면 number 타입을 얻는다.
 
+삼항 연산자처럼 생긴 부분의 `T extends Promise<infer U>` 부분에서는 T타입의 변수가 Promise<infer U> 타입에 할당 될 수 있는지에 따라 참 값이 판별된다.
+
+이 때 조건식이 참으로 평가되면 infer 키워드를 사용할 수 있다.
+
+- `Promise<number> extends Promise<infer U>` 와 같은 경우 U타입은 number타입으로 추론된다.
 
 
 
+2. Tuple 다루기
+
+`[string, number, boolean]`과 같은 튜플 타입에서 `[number, boolean]`만 가져오고 싶을 때 Conditional Type과 Variadic Tuple Tpye을 이용해서 이를 구현할 수 있다.
+
+```typescript
+type TailOf<T> = T extends [unknown, ...infer U] ? U : [];
+
+//type A = [boolean, number]
+type A = TailOf<[string, boolean, number]>;
+
+```
 
 
 
+첫 요소를 제외하고  `...infer U` 구문을 이용해 뒤의 요소들을 모두 선택할 수 있다.
 
 
 
+##### Conditional Type과 Template Literal Type을 함께 사용하기
 
 
+
+1. 간단한 추론
+
+```typescript
+type InOrOut<T> = T extends `fade${infer R}` ? R : never;
+
+// type I = "In"
+type I = InOrOut<"fadeIn">
+// type O = "Out"
+type O = InOrOut<"fadeOut">
+```
+
+fadein fadeout에서 fade 접두사를 버리고 In, Out만 가져오고 싶을 때 이런식으로 활용할 수 있다.
+
+
+
+2. 문자열에서 공백 없애기
+
+```typescript
+// type T = "Toss"
+type T = TrimRight<"Toss     ">; 
+```
+
+TrimRight<T>타입은 재귀적 타입 선언을 활용한다.
+
+```typescript
+type TrimRight<T extends string> = 
+	T extends `${infer R} `
+	? TrimRight<R>
+	: T;
+```
+
+위의 코드에서 ${infer R}뒤에 공백이 한칸 있다.
+
+T타입의 오른쪽에 공백이 하나 있다면, 공백을 하나 빠뜨린 것을 R타입으로 추론하고 다시 TrimRight<R>을 호출한다.
+
+공백이 더 이상 존재하지 않는다면 원래 주어진 타입 그대로를 반환한다.
+
+
+
+3. 점으로 연결된 문자열 split 하기
+
+```typescript
+type Split<S extends string> = 
+  S extends `${infer T}.${infer U}` 
+    ? [T, ...Split<U>] 
+    : [S];
+
+// type S = ["foo", "bar", "baz"];
+type S = Split<"foo.bar.baz">;
+```
+
+주어진 S타입에서 첫번째 .을 찾고 그 앞부분을 T, 뒷부분을 U로 추론한다. 이후 재귀적으로 하나씩 값을 이어나가면서 원하는 결과타입을 만들어나간다.
+
+
+
+4. lodash.set()함수 타입 추론하기
+
+`lodash.set()`은 문자열로 된 접근자를 이용하여 객체의 깊은 프로퍼티까지 수정할 수 있는 함수다.
+
+```typescript
+const someObject = {
+    toss: {
+        core: {
+            client: {
+                platform: "foo"
+            }
+        }
+    }
+};
+
+// this is Ok
+lodsahSet(someObject, "toss.core.client", {platform: 'bar'});
+
+// Error: "bar"is not assignable to type "{platform: string}"
+lodsahSet(someObject, "toss.core.client", bar)
+
+```
+
+Template Literal Type이 나오기 전에는 이런 함수는 타입-안전하게ㅔ 사용할 수 없어 세번째 인자를 any로 규정해야 했다. 하지만 타입 정의를 조합하면 lodash.set()을 더욱 안전하게 사용가능하다.
+
+
+
+우선 `ValueOf<T, P>` 타입이 필요하다. 이는 객체 T와 접근 경로 P가 주어졌을 때 T를 P경로로 순서대로 접근했을 때 결과로 나오는 타입을 나타낸다.
+
+
+
+```typescript
+interface Foo {
+    foo: {
+        bar: {
+            baz: string
+        }
+    }
+};
+
+// type A = { bar: { baz: string } };
+type A = ValueOf<Foo, ['foo']>;
+
+// type B = { baz: string };
+type B = ValueOf<Foo, ['foo', 'bar']>;
+
+// type C = string;
+type C = ValueOf<Foo, ['foo', 'bar', 'baz']>;
+```
+
+
+
+만약 위와 같은 `ValueOf<T,P>가 있다면, 위에서 만들었던 Split<S>와 조홥하여 쉽게 lodash.set()함수에 타입을 부여할 수 있다.
 
